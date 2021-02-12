@@ -45,3 +45,10 @@ let rec map f l =
 	| [] -> []
 	| h::t -> f h :: map f t
 
+let isne i = i<>[]
+
+let rec filter p l = 
+	match l with
+	| [] -> []
+	| h::t -> if p then h :: filter p t else filter p t
+
