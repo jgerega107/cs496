@@ -1,6 +1,6 @@
-open Proc.Interp;;
-open Proc.Ds;;
-open Proc.Ast;;
+open Recs.Interp;;
+open Recs.Ds;;
+open Recs.Ast;;
 (* Added by OPAM. *)
 let () =
   try Topdirs.dir_directory (Sys.getenv "OCAML_TOPLEVEL_PATH")

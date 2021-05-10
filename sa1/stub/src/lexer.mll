@@ -4,6 +4,8 @@
 
 {
 open Parser
+
+exception Error of string
 }
 
 (* The second section of the lexer definition defines *identifiers*
@@ -25,7 +27,7 @@ let white = [' ' '\t' '\n']+
 let digit = ['0'-'9']
 let int = digit+
 let letter = ['a'-'z' 'A'-'Z']
-let id = letter+
+let id = letter ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 
 (* The final section of the lexer definition defines how to parse a character
    stream into a token stream.  Each of the rules below has the form
@@ -36,37 +38,50 @@ let id = letter+
 
 rule read =
   parse
-  | white       { read lexbuf }
-  | "+"         { PLUS }
-  | "-"         { MINUS }
-  | "*"         { TIMES }
-  | "/"         { DIVIDED }
-  | "("         { LPAREN }
-  | ")"         { RPAREN }
-  | "{"         { LBRACE }
-  | "}"         { RBRACE }
-  | ","         { COMMA }
-  | "let"       { LET }
-  | "="         { EQUALS }
-  | "in"        { IN }
-  | "zero?"     { ISZERO }
-  | "if"        { IF }
-  | "then"      { THEN }
-  | "else"      { ELSE }
-  | "proc"      { PROC }
-  | "cons"      { CONS }
-  | "hd"        { HD }
-  | "tl"        { TL }
-  | "empty?"    { EMPTY }
-  | "abs"       { ABS }
-  | "emptylist" { EMPTYLIST }
-  | "emptytree" { EMPTYTREE }
-  | "node"      { NODE }
-  | "caseT"     { CASET }
-  | "->"        { ARROW }  
-  | "of"        { OF }   
-  | id          { ID (Lexing.lexeme lexbuf) }
-  | int         { INT (int_of_string (Lexing.lexeme lexbuf)) }
-  | eof         { EOF }
+  | white    { read lexbuf }
+  | "+"      { PLUS }
+  | "-"      { MINUS }
+  | "*"      { TIMES }
+  | "/"      { DIVIDED }
+  | "("      { LPAREN }
+  | ")"      { RPAREN }
+  | "{"      { LBRACE }
+  | "}"      { RBRACE }
+  | ";"      { SEMICOLON }
+  | ","      { COMMA }
+  | "let"    { LET }
+  | "="      { EQUALS }
+  | "in"     { IN }
+  | "proc"   { PROC }
+  | "zero?"  { ISZERO }
+  | "if"     { IF }
+  | "then"   { THEN }
+  | "else"   { ELSE }
+  | "letrec" { LETREC }
+  | "set"    { SET }
+  | "begin"  { BEGIN }
+  | "end"    { END }
+  | "newref" { NEWREF }
+  | "deref"  { DEREF }
+  | "setref" { SETREF }
+  | "emptystack" { EMPTYSTACK }
+  | "push" { PUSH }
+  | "pop" { POP }
+  | "top" { TOP }
+  | "empty?" { ISEMPTY }
+  | "size" { SIZE }
+  | "debug"      { DEBUG }
+  | "(*"     { comment lexbuf } (* activate "comment" rule *)
+  | id       { ID (Lexing.lexeme lexbuf) }
+  | int      { INT (int_of_string (Lexing.lexeme lexbuf)) }
+  | eof      { EOF }
+  | _
+      { raise (Error (Printf.sprintf
+                        "At offset %d: unexpected character."
+                        (Lexing.lexeme_start lexbuf))) }
+and
+  comment = parse
+  | "*)" { read lexbuf }
+  | _    { comment lexbuf }  (* skip comments *)
 
-(* And that's the end of the lexer definition. *)
+

@@ -3,7 +3,7 @@
 
 (test
 (name test)
-(libraries ounit2 proc))
+(libraries ounit2 recs))
 
 (env
   (dev

@@ -2,10 +2,10 @@
 
 
 (library
- (name    proc)      ; name of the opam library
- (public_name proc)  ; required for generating documentation
+ (name    recs)      ; name of the opam library
+ (public_name recs)  ; required for generating documentation
                     ; also requires let.opam in root of workspace
- (synopsis "Interpreter for PROC")
+ (synopsis "Interpreter for RECS (REC + Stacks)")
  ;; (wrapped      false) ; true by default
 )
 
